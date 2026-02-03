@@ -104,16 +104,19 @@ short s2vk(char* s) {
  return 0;
 }
 
-short s2mod(char* s) {
+short s2mod(char* s, short vk) {
  short ret = 0;
- if ((ret = atoi(s)) != 0) {
-   return ret;
+ if (vk >= 0x00FF) {
+   return atoi(s);
  }
- if (strchr(s, 'A')) ret |= MOD_A;
- if (strchr(s, 'C')) ret |= MOD_C;
- if (strchr(s, 'S')) ret |= MOD_S;
- if (strchr(s, 'W')) ret |= MOD_W;
- if (ret == 0) {
+ else {
+   if (strchr(s, 'A')) ret |= MOD_A;
+   if (strchr(s, 'C')) ret |= MOD_C;
+   if (strchr(s, 'S')) ret |= MOD_S;
+   if (strchr(s, 'W')) ret |= MOD_W;
+   if (ret != 0) {
+     return ret;
+   }
    ret = s2vk(s);
    if (ret != 0) {
      ret += 0x8000;
@@ -128,7 +131,7 @@ void cfg_parse(char* line, int lnum) {
   if (n > 0) configs[lnum].label = s2label(slabel);
   if (n > 1) configs[lnum].type  = s2type(stype);
   if (n > 2) configs[lnum].vk    = s2vk(svk);
-  if (n > 3) configs[lnum].mod   = s2mod(smod);
+  if (n > 3) configs[lnum].mod   = s2mod(smod, configs[lnum].vk);
   printf("cfg_parse:%15s %2d %04X %04X(%d)\n",
       labelName[configs[lnum].label],
       configs[lnum].type,
