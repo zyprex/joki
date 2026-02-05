@@ -28,7 +28,23 @@ int gConfigTriggerThreshold = 60;
 int gConfigSwapABXY = 0;
 
 int gModeCfg = 0; /* flag for switch cfg mode */
-int gentlePushStick; /* init with Dead Zone! */
+
+double eqm = 1.0; /* Mult factor */
+int eqa = 0; /* Add factor */
+
+/* d = thumbstick's x or y */
+int stick2client(int d) {
+  return d/(ABS(d)*eqm+eqa);
+}
+
+/* Calc the divider, it's scaling the thumbstick's x,y
+ * to normal range */
+void calcDiv() {
+  int minDiv = 900;
+  int maxDiv = 1800;
+  eqm = (double)(minDiv - maxDiv) / (double)(32767 - gConfigDeadZone);
+  eqa = maxDiv - gConfigDeadZone * eqm;
+}
 
 int load_config_file_mode(KLabel lb) {
   if (gModeCfg) {
@@ -133,28 +149,28 @@ void thumbstick_register(const char lr, short x, short y) {
   if (IN_DEAD_ZONE(x, y, gConfigDeadZone)) {
     return;
   }
-  int absX = ABS(x);
-  int absY = ABS(y);
   /* -32768~32767 */
   LOG("%cS(X,Y) = (%d,%d)\n", lr, x, y);
   if (COND_CAN_MOVE_MOUSE) {
-    int mX = absX > gentlePushStick ? absX/1000 : absX/2000;
-    int mY = absY > gentlePushStick ? absY/1000 : absY/2000;
-    LOG("mouse_xy(%d,%d) \n", mX*SIGN(x), mY*SIGN(y)*(-1));
-    mice_move(mX*SIGN(x), mY*SIGN(y)*(-1));
+    int mX = stick2client(x);
+    int mY = stick2client(y);
+    LOG("mouse_xy(%d,%d) \n", mX, -mY);
+    mice_move(mX, -mY);
     if (!gModeCfg) { /* walk through */
       return;
     }
   }
   if (COND_CAN_MOVE_WINDOW) {
-    int mX = absX > gentlePushStick ? absX/1000 : absX/2000;
-    int mY = absY > gentlePushStick ? absY/1000 : absY/2000;
-    LOG("window_xy(%d,%d) \n", mX*SIGN(x), mY*SIGN(y)*(-1));
-    window_move(mX*SIGN(x), mY*SIGN(y)*(-1));
+    int mX = stick2client(x);
+    int mY = stick2client(y);
+    LOG("window_xy(%d,%d) \n", mX, -mY);
+    window_move(mX, -mY);
     if (!gModeCfg) { /* walk through */
       return;
     }
   }
+  int absX = ABS(x);
+  int absY = ABS(y);
   thumbstick_move_register(lr,0,(y > 0 && absY > absX));
   thumbstick_move_register(lr,1,(y < 0 && absY > absX));
   thumbstick_move_register(lr,2,(x > 0 && absX > absY));
@@ -294,7 +310,7 @@ void parse_cmdargs(int argc, char* argv[]) {
   if (!hasArgC) {
     load_config_file("START");
   }
-  gentlePushStick = (32767 - gConfigDeadZone)/2;
+  calcDiv();
 }
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType) {

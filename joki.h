@@ -8,7 +8,6 @@
 #include "inputs.h"
 
 #define ABS(a) ((a)>=0?(a):(-(a)))
-#define SIGN(a) ((a)>=0?1:-1)
 #define IN_DEAD_ZONE(x, y, z) ((x)*(x)+(y)*(y) < z*z)
 
 #define APP_NAME "joki"
