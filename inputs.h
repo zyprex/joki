@@ -17,6 +17,7 @@
 void input_event(INPUT* inps);
 void mice_event(short dx, short dy, DWORD mouseData, DWORD dwFlags);
 void kbd_event(WORD wVk, DWORD dwFlags);
+void mice_move_abs(unsigned short x, unsigned short y);
 void mice_move(short dx, short dy);
 void mice_wheel(short span);
 void mice_hwheel(short span);

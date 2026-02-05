@@ -2,20 +2,24 @@
 {"off", 0x0000}, /* the FALSE value for option */
 {"on",  0x7FFF}, /* the TRUE value for option */
 {"cfg_mode", 0x00FF},
-{"wheel_scroll",  0x0100}, /* param: distance in px */
-{"hwheel_scroll", 0x0101}, /* param: distance in px */
-{"mouse_move_x",  0x0102}, /* param: distance in px */
-{"mouse_move_y" , 0x0103}, /* param: distance in px */
+
+{"wheel_scroll",   0x0100}, /* param: distance in px */
+{"hwheel_scroll",  0x0101}, /* param: distance in px */
+{"mouse_move_x",   0x0102}, /* param: distance in px */
+{"mouse_move_y",   0x0103}, /* param: distance in px */
+{"mouse_to_center",0x0104},
+
 {"morse_send",       0x0200}, /* param: dit=0 or else dah */
 {"morse_clear",      0x0201},
 {"morse_char",       0x0202},
 {"morse_char_repeat",0x0203},
+
 {"window_hide_show", 0x0300},
 {"window_topmost",   0x0301},
 {"window16:9_width", 0x0302}, /* param: window width in px*/
 {"window4:3_width",  0x0303},  /* param: window width in px*/
-{"window_move_x", 0x0304}, /* param: distance in px*/
-{"window_move_y", 0x0305},  /* param: distance in px*/
+{"window_move_x",    0x0304}, /* param: distance in px*/
+{"window_move_y",    0x0305},  /* param: distance in px*/
 
 /* mouse buttons */
 {"mouse_left", VK_LBUTTON},

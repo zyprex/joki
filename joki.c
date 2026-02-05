@@ -161,8 +161,8 @@ void thumbstick_register(const char lr, short x, short y) {
     }
   }
   if (COND_CAN_MOVE_WINDOW) {
-    int mX = stick2client(x);
-    int mY = stick2client(y);
+    int mX = x/256;
+    int mY = y/256;
     LOG("window_xy(%d,%d) \n", mX, -mY);
     window_move(mX, -mY);
     if (!gModeCfg) { /* walk through */

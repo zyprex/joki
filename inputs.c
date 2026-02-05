@@ -27,6 +27,11 @@ void kbd_event(WORD wVk, DWORD dwFlags) {
   input_event(&inps);
 }
 
+/* 0~65535 */
+void mice_move_abs(unsigned short x, unsigned short y) {
+  mice_event(x, y, 0, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
+}
+
 void mice_move(short dx, short dy) {
   mice_event(dx, dy, 0, MOUSEEVENTF_MOVE);
 }
@@ -149,6 +154,7 @@ void key_translate_ex(WORD vk, WORD mod) {
     case 0x0101: mice_hwheel(mod); break; /* hwheel_scroll */
     case 0x0102: mice_move(mod, 0); break;  /*mouse_move_x */
     case 0x0103: mice_move(0, mod); break;  /*mouse_move_y */
+    case 0x0104: mice_move_abs(32767,32767); break;  /*mouse_to_center */
 
     case 0x0200: morse_send(mod); break;  /* morse_send */
     case 0x0201: morse_clear(); break;  /* morse_clear */

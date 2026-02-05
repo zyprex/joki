@@ -74,6 +74,6 @@ void window_topmost() {
 void window_move(int x, int y) {
   FgWnd* fgwnd = fgwnd_query();
   MoveWindow(fgwnd->hwnd,
-      (fgwnd->x)+x, (fgwnd->y)+y, fgwnd->w, fgwnd->h, 0);
+      (fgwnd->x)+x, (fgwnd->y)+y, fgwnd->w, fgwnd->h, 1);
 }
 
