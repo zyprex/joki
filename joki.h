@@ -11,7 +11,7 @@
 #define IN_DEAD_ZONE(x, y, z) ((x)*(x)+(y)*(y) < z*z)
 
 #define APP_NAME "joki"
-#define APP_VERSION "v0.4-beta"
+#define APP_VERSION "v0.5-beta"
 
 /* Controller key State */
 typedef struct CKState_t {
