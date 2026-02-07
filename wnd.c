@@ -77,3 +77,6 @@ void window_move(int x, int y) {
       (fgwnd->x)+x, (fgwnd->y)+y, fgwnd->w, fgwnd->h, 1);
 }
 
+void screen_off() {
+  PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, 2);
+}

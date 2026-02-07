@@ -17,9 +17,10 @@
 {"window_hide_show", 0x0300},
 {"window_topmost",   0x0301},
 {"window16:9_width", 0x0302}, /* param: window width in px*/
-{"window4:3_width",  0x0303},  /* param: window width in px*/
+{"window4:3_width",  0x0303}, /* param: window width in px*/
 {"window_move_x",    0x0304}, /* param: distance in px*/
-{"window_move_y",    0x0305},  /* param: distance in px*/
+{"window_move_y",    0x0305}, /* param: distance in px*/
+{"screen_off",       0x0306},
 
 /* mouse buttons */
 {"mouse_left", VK_LBUTTON},
