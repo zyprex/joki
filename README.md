@@ -166,6 +166,18 @@ R <repeat> on
 
 A website for morse code: https://www.omniglot.com/writing/morsecode.htm
 
+## Run Shortcuts
+
+Use `runlnk` command to run `.lnk` file in directory `lnks`.
+
+Example:
+```
+# open the "lnks/1.lnk"
+A 0 runlnk 1
+# open the "lnks/1.lnk" as adminstrator
+A 0 runlnk_admin 1
+```
+
 # Know Issues
 
 1. The program didn't hijack original gamepad key event.

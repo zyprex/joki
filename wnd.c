@@ -1,6 +1,7 @@
 #include "wnd.h"
 
 HWND hideShowHwnd = NULL;
+
 typedef struct FgWnd_t {
   HWND hwnd;
   int x;
@@ -8,6 +9,7 @@ typedef struct FgWnd_t {
   int w;
   int h;
 } FgWnd;
+
 
 FgWnd* fgwnd_query() {
   static FgWnd fgwnd;
@@ -79,4 +81,40 @@ void window_move(int x, int y) {
 
 void screen_off() {
   PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, 2);
+}
+
+
+/* operation = "open" or "runas"*/
+void runlnk(char* operation, short mod) {
+  char filepath[60];
+  sprintf(filepath, "lnks\\%d.lnk", mod);
+  HINSTANCE hInst = NULL;
+  SHELLEXECUTEINFO shxInfo;
+  shxInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+  shxInfo.fMask = SEE_MASK_DEFAULT;
+  shxInfo.hwnd = NULL;
+  shxInfo.lpVerb = operation;
+  shxInfo.lpFile = filepath;
+  shxInfo.lpParameters = NULL;
+  shxInfo.lpDirectory = NULL;
+  shxInfo.nShow = SW_SHOWNORMAL;
+  shxInfo.hInstApp = hInst;
+  if (!ShellExecuteEx(&shxInfo)) {
+    printf("Run:'%s' failed.\n", filepath);
+  }
+}
+
+void runlnk_op_runas(void* m) {
+  runlnk("runas", *(short*)m);
+}
+
+void runlnk_op_open(void* m) {
+  runlnk("open", *(short*)m);
+}
+
+void runlnk_async(char* operation, short mod) {
+  if (!strcmp(operation, "open"))
+    _beginthread(runlnk_op_open, 0, &mod);
+  if (!strcmp(operation, "runas"))
+    _beginthread(runlnk_op_runas, 0, &mod);
 }

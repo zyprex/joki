@@ -168,5 +168,7 @@ void key_translate_ex(WORD vk, WORD mod) {
     case 0x0304: window_move(mod, 0); break; /* window_move_x */
     case 0x0305: window_move(0, mod); break; /* window_move_y */
     case 0x0306: screen_off(); break; /* screen_off */
+    case 0x0307: runlnk_async("open", mod); break; /* runlnk */
+    case 0x0308: runlnk_async("runas", mod); break; /* runlnk_admin */
   }
 }

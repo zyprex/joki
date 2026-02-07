@@ -21,6 +21,8 @@
 {"window_move_x",    0x0304}, /* param: distance in px*/
 {"window_move_y",    0x0305}, /* param: distance in px*/
 {"screen_off",       0x0306},
+{"runlnk",           0x0307}, /* param: number n */
+{"runlnk_admin",     0x0308}, /* param: number n */
 
 /* mouse buttons */
 {"mouse_left", VK_LBUTTON},
