@@ -1,11 +1,26 @@
 # About Joki
 
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/zyprex/joki/total)
+
 Joki is a console program used to map gamepad keys to keyboard or mouse inputs.
 
 # Requirements
 
 - A controller with X-input mode support.
 - Windows 8 (XInput1.4)
+
+# Table of Contents
+1. [Quick Start](#quick-start)
+2. [Technical Details](#technical-details)
+  - [Multiple Tap and Long Press](#multiple-tap-and-long-press)
+3. [Features Explanation](#features-explanation)
+  - [Command Arguments](#command-arguments)
+  - [Configure File Specification](#configure-file-specification)
+  - [Switch Profiles](#switch-profiles)
+  - [Morse Code Input](#morse-code-input)
+  - [Tilt Mode](#tilt-mode)
+4. [Know Issues](#know-issues)
+5. [Reason](#reason)
 
 # Quick Start
 
@@ -29,10 +44,10 @@ LS_MOUSE_MOVE <option> on
 
 # Technical Details
 
-## About multipe tap and long press
+## Multiple Tap and Long Press
 
 If tune time setting is default value, then:
-- Multipe tap occured in 1s.
+- Multiple tap occured in 1s.
 - Hold 1s long, trigger long press.
 
 Adjust this behavior from cmdarg `--tune-time`.
@@ -54,6 +69,8 @@ down-----------up
 
 ```
 
+# Features Explanation
+
 ## Command Arguments
 
 Type `joki.exe -h` see Command args help.
@@ -62,7 +79,7 @@ Example:
 
 Load `configs/mycfg.ini` as initial file.
 And swap 'ABXY' buttons.
-Set frame delay to 25ms, trigger multipe tap in 1s(25x40),
+Set frame delay to 25ms, trigger multiple tap in 1s(25x40),
 trigger long press after 2s(25x80).
 
 ```
@@ -97,7 +114,7 @@ Explain one line config:
   - `<long_press>` or `-1`: trigger only at long hold the key.
   - `<repeat>`: repeat after long press a key.
   - `<toggle>`: switch key's down up state.
-  - number N > 2 : trigger only when you multipe tap N times.
+  - number N > 2 : trigger only when you multiple tap N times.
 
 **WARN: some type are definitly confilct with other!**
 
