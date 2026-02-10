@@ -83,10 +83,11 @@ Explain one line config:
     - `LS_UP,LS_DOWN,LS_RIGHT,LS_LEFT`
     - `RS_UP,RS_DOWN,RS_RIGHT,RS_LEFT`
   - A config item name
-    - `LS_MOUSE_MOVE`
-    - `RS_MOUSE_MOVE`
-    - `LS_WINDOW_MOVE`
-    - `RS_WINDOW_MOVE`
+    - `LS_MOUSE_MOVE`: on / off
+    - `RS_MOUSE_MOVE`: on / off
+    - `LS_WINDOW_MOVE`: on / off
+    - `RS_WINDOW_MOVE`: on / off
+    - `TITL_MODE`: left / right / off
 
 2. `CONFIG_TYPE`
   - `<option>` (only for config item name)
@@ -136,7 +137,7 @@ A 0 mouse_move_y 10
   - lowercase word: treat as `VIRTUAL_CODE`.
   - number: the parameter for `VIRTUAL_CODE`.
 
-## Switch profile
+## Switch Profiles
 
 Switch different config file by `cfg_mode` function.
 
@@ -176,6 +177,20 @@ Example:
 A 0 runlnk 1
 # open the "lnks/1.lnk" as adminstrator
 A 0 runlnk_admin 1
+```
+
+## Tilt Mode
+
+If want a single hand mode, use option `TITL_MODE`.
+
+```
+# Use the controller by single left hand.
+# The DPAD and two sticks rotate 90 degree.
+TITL_MODE <option> left
+# Use the controller by single right hand.
+# The DPAD and two sticks rotate -90 degree.
+TITL_MODE <option> right
+# And any other value for TITL_MODE is useless.
 ```
 
 # Know Issues

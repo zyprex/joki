@@ -60,6 +60,7 @@ typedef enum KLabel_e {
   KL_RS_MOUSE_MOVE,
   KL_LS_WINDOW_MOVE,
   KL_RS_WINDOW_MOVE,
+  KL_TILT_MODE,
 } KLabel;
 /* key types */
 #define KT_DOUBLE_TAP 2

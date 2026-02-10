@@ -12,6 +12,7 @@ const char* labelName[] = {
   "RS_MOUSE_MOVE",
   "LS_WINDOW_MOVE",
   "RS_WINDOW_MOVE",
+  "TILT_MODE",
 };
 /* Keys that doesn't exist on most keyboards are
  * not in this list, if has any specific purpose, 
@@ -51,6 +52,7 @@ VCode kLabels[] = {
   LB_DEF(RS_MOUSE_MOVE)
   LB_DEF(LS_WINDOW_MOVE)
   LB_DEF(RS_WINDOW_MOVE)
+  LB_DEF(TILT_MODE)
 };
 const int klabelsLen = sizeof(kLabels) / sizeof(VCode);
 

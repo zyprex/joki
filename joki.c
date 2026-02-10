@@ -32,6 +32,23 @@ int gModeCfg = 0; /* flag for switch cfg mode */
 double eqm = 1.0; /* Mult factor */
 int eqa = 0; /* Add factor */
 
+/* initial vars for running state */
+int iv_LS_MOUSE_MOVE = 0;
+int iv_RS_MOUSE_MOVE = 0;
+int iv_LS_WINDOW_MOVE = 0;
+int iv_RS_WINDOW_MOVE = 0;
+#define TITL_MODE_L VK_LEFT
+#define TITL_MODE_R VK_RIGHT
+int iv_TITL_MODE = 0;
+
+void init_running_state() {
+  iv_LS_MOUSE_MOVE = CFG_TURN_ON(KL_LS_MOUSE_MOVE);
+  iv_RS_MOUSE_MOVE = CFG_TURN_ON(KL_RS_MOUSE_MOVE);
+  iv_LS_WINDOW_MOVE = CFG_TURN_ON(KL_LS_WINDOW_MOVE);
+  iv_RS_WINDOW_MOVE = CFG_TURN_ON(KL_RS_WINDOW_MOVE);
+  iv_TITL_MODE = CFG_TURN_ON(KL_TILT_MODE);
+}
+
 /* d = thumbstick's x or y */
 int stick2client(int d) {
   return d/(ABS(d)*eqm+eqa);
@@ -40,7 +57,7 @@ int stick2client(int d) {
 /* Calc the divider, it's scaling the thumbstick's x,y
  * to normal range */
 void calcDiv() {
-  int minDiv = 900;
+  int minDiv = 600;
   int maxDiv = 1800;
   eqm = (double)(minDiv - maxDiv) / (double)(32767 - gConfigDeadZone);
   eqa = maxDiv - gConfigDeadZone * eqm;
@@ -145,6 +162,22 @@ void thumbstick_move_register(const char lr, int idx, int isMove) {
   simulate_downup_or_load_cfg(lb);
 }
 
+void calc_tilted_xy(int* x, int* y) {
+  int tempX = *x;
+  int tempY = *y;
+  if (iv_TITL_MODE == TITL_MODE_L) {
+    *x = -tempY;
+    *y = -tempX;
+  }
+  else if (iv_TITL_MODE == TITL_MODE_R) {
+    *x = tempY;
+    *y = tempX;
+  }
+  else {
+    *y = -*y;
+  }
+}
+
 void thumbstick_register(const char lr, short x, short y) {
   if (IN_DEAD_ZONE(x, y, gConfigDeadZone)) {
     return;
@@ -155,7 +188,8 @@ void thumbstick_register(const char lr, short x, short y) {
     int mX = stick2client(x);
     int mY = stick2client(y);
     LOG("mouse_xy(%d,%d) \n", mX, -mY);
-    mice_move(mX, -mY);
+    calc_tilted_xy(&mX, &mY);
+    mice_move(mX, mY);
     if (!gModeCfg) { /* walk through */
       return;
     }
@@ -164,17 +198,32 @@ void thumbstick_register(const char lr, short x, short y) {
     int mX = x/256;
     int mY = y/256;
     LOG("window_xy(%d,%d) \n", mX, -mY);
-    window_move(mX, -mY);
+    calc_tilted_xy(&mX, &mY);
+    window_move(mX, mY);
     if (!gModeCfg) { /* walk through */
       return;
     }
   }
   int absX = ABS(x);
   int absY = ABS(y);
-  thumbstick_move_register(lr,0,(y > 0 && absY > absX));
-  thumbstick_move_register(lr,1,(y < 0 && absY > absX));
-  thumbstick_move_register(lr,2,(x > 0 && absX > absY));
-  thumbstick_move_register(lr,3,(x < 0 && absX > absY));
+  if (iv_TITL_MODE == TITL_MODE_L) {
+    thumbstick_move_register(lr,3,(y > 0 && absY > absX));
+    thumbstick_move_register(lr,2,(y < 0 && absY > absX));
+    thumbstick_move_register(lr,0,(x > 0 && absX > absY));
+    thumbstick_move_register(lr,1,(x < 0 && absX > absY));
+  }
+  else if (iv_TITL_MODE == TITL_MODE_R) {
+    thumbstick_move_register(lr,2,(y > 0 && absY > absX));
+    thumbstick_move_register(lr,3,(y < 0 && absY > absX));
+    thumbstick_move_register(lr,1,(x > 0 && absX > absY));
+    thumbstick_move_register(lr,0,(x < 0 && absX > absY));
+  }
+  else {
+    thumbstick_move_register(lr,0,(y > 0 && absY > absX));
+    thumbstick_move_register(lr,1,(y < 0 && absY > absX));
+    thumbstick_move_register(lr,2,(x > 0 && absX > absY));
+    thumbstick_move_register(lr,3,(x < 0 && absX > absY));
+  }
 }
 
 int xusers_seek() {
@@ -221,28 +270,42 @@ void xusers_loop() {
     KEY_X_REG(BACK)
     KEY_X_REG(L);
     KEY_X_REG(R);
-    KEY_X_REG(DPAD_UP);
-    KEY_X_REG(DPAD_DOWN);
-    KEY_X_REG(DPAD_RIGHT);
-    KEY_X_REG(DPAD_LEFT);
     KEY_X_REG(LS);
     KEY_X_REG(RS);
     KEY_X_REG(LT);
     KEY_X_REG(RT);
 
-    if (gConfigSwapABXY) {
-      key_complex_register(KL_B, COND_A, gVarIdleFrame, &gpA);
-      key_complex_register(KL_A, COND_B, gVarIdleFrame, &gpB);
-      key_complex_register(KL_Y, COND_X, gVarIdleFrame, &gpX);
-      key_complex_register(KL_X, COND_Y, gVarIdleFrame, &gpY);
+    if (iv_TITL_MODE == TITL_MODE_L) {
+      KEY_XY_REG(DPAD_UP,   DPAD_RIGHT);
+      KEY_XY_REG(DPAD_DOWN, DPAD_LEFT);
+      KEY_XY_REG(DPAD_RIGHT,DPAD_DOWN);
+      KEY_XY_REG(DPAD_LEFT, DPAD_UP);
+    }
+    else if (iv_TITL_MODE == TITL_MODE_R) {
+      KEY_XY_REG(DPAD_UP,   DPAD_LEFT);
+      KEY_XY_REG(DPAD_DOWN, DPAD_RIGHT);
+      KEY_XY_REG(DPAD_RIGHT,DPAD_UP);
+      KEY_XY_REG(DPAD_LEFT, DPAD_DOWN);
     }
     else {
-      key_complex_register(KL_A, COND_A, gVarIdleFrame, &gpA);
-      key_complex_register(KL_B, COND_B, gVarIdleFrame, &gpB);
-      key_complex_register(KL_X, COND_X, gVarIdleFrame, &gpX);
-      key_complex_register(KL_Y, COND_Y, gVarIdleFrame, &gpY);
+      KEY_X_REG(DPAD_UP);
+      KEY_X_REG(DPAD_DOWN);
+      KEY_X_REG(DPAD_RIGHT);
+      KEY_X_REG(DPAD_LEFT);
     }
 
+    if (gConfigSwapABXY) {
+      KEY_XY_REG(A,B);
+      KEY_XY_REG(B,A);
+      KEY_XY_REG(X,Y);
+      KEY_XY_REG(Y,X);
+    }
+    else {
+      KEY_X_REG(A);
+      KEY_X_REG(B);
+      KEY_X_REG(X);
+      KEY_X_REG(Y);
+    }
 
     if (state.dwPacketNumber == dwPacketNumber) {
       /* Controller is not change */
@@ -258,8 +321,8 @@ void xusers_loop() {
 void load_config_file(char* fname) {
   char fullpath[256];
   sprintf(fullpath, "configs/%s.ini", fname);
-  if (cfg_load(fullpath)) {
-    return;
+  if (!cfg_load(fullpath)) {
+    init_running_state();
   }
 }
 

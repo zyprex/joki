@@ -30,10 +30,10 @@ typedef struct CKState_t {
 #define COND_R (buttons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
 
 
-#define COND_DPAD_UP (buttons & XINPUT_GAMEPAD_DPAD_UP)
-#define COND_DPAD_DOWN (buttons & XINPUT_GAMEPAD_DPAD_DOWN)
+#define COND_DPAD_UP    (buttons & XINPUT_GAMEPAD_DPAD_UP)
+#define COND_DPAD_DOWN  (buttons & XINPUT_GAMEPAD_DPAD_DOWN)
 #define COND_DPAD_RIGHT (buttons & XINPUT_GAMEPAD_DPAD_RIGHT)
-#define COND_DPAD_LEFT (buttons & XINPUT_GAMEPAD_DPAD_LEFT)
+#define COND_DPAD_LEFT  (buttons & XINPUT_GAMEPAD_DPAD_LEFT)
 #define COND_LS (buttons & XINPUT_GAMEPAD_LEFT_THUMB)
 #define COND_RS (buttons & XINPUT_GAMEPAD_RIGHT_THUMB)
 
@@ -46,18 +46,26 @@ typedef struct CKState_t {
 #define COND_BACK (buttons & XINPUT_GAMEPAD_BACK)
 
 #define COND_CAN_MOVE_MOUSE \
-  (lr == 'L' && CFG_TURN_ON(KL_LS_MOUSE_MOVE)) || \
-  (lr == 'R' && CFG_TURN_ON(KL_RS_MOUSE_MOVE))
+  (lr == 'L' && iv_LS_MOUSE_MOVE) || \
+  (lr == 'R' && iv_RS_MOUSE_MOVE)
 
 #define COND_CAN_MOVE_WINDOW \
-  (lr == 'L' && CFG_TURN_ON(KL_LS_WINDOW_MOVE)) || \
-  (lr == 'R' && CFG_TURN_ON(KL_RS_WINDOW_MOVE))
+  (lr == 'L' && iv_LS_WINDOW_MOVE) || \
+  (lr == 'R' && iv_RS_WINDOW_MOVE)
 
 /* Macro Expand Example:
  * KEY_X_REG(A) =>
  * key_complex_register(KL_A, COND_A, gVarIdleFrame, &gpA); */
 #define KEY_X_REG(lb) \
   key_complex_register(KL_##lb, COND_##lb, gVarIdleFrame, &(gp##lb));
+/* Macro Expand Example:
+ * KEY_XY_REG(A,B) =>
+ * key_complex_register(KL_A, COND_B, gVarIdleFrame, &gpB); */
+#define KEY_XY_REG(lb,lbr) \
+  key_complex_register(KL_##lb, COND_##lbr, gVarIdleFrame, &(gp##lbr));
+
+
+void init_running_state();
 
 int load_config_file_mode(KLabel lb);
 void simulate_keydown(KLabel lb, short type);
@@ -66,6 +74,7 @@ void simulate_keypress(KLabel lb, short type);
 void simulate_downup_or_load_cfg(KLabel lb);
 void key_complex_register(KLabel lb, int isDown, int idleFrame, CKState* stat);
 void thumbstick_move_register(const char lr, int idx, int isMove);
+void calc_tilted_xy(int* x, int* y);
 void thumbstick_register(const char lr, short x, short y);
 
 int xusers_seek();
