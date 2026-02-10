@@ -17,6 +17,7 @@ CKState gpSTART;
 CKState gpBACK;
 
 DWORD xusers[XUSER_MAX_COUNT];
+
 int gVarIdleFrame;
 
 int frameTime = 100; /* per frame time in ms */
@@ -56,9 +57,7 @@ int stick2client(int d) {
 
 /* Calc the divider, it's scaling the thumbstick's x,y
  * to normal range */
-void calcDiv() {
-  int minDiv = 600;
-  int maxDiv = 1800;
+void calcDiv(int minDiv, int maxDiv) {
   eqm = (double)(minDiv - maxDiv) / (double)(32767 - gConfigDeadZone);
   eqa = maxDiv - gConfigDeadZone * eqm;
 }
@@ -334,6 +333,8 @@ void cleanup() {
 
 void parse_cmdargs(int argc, char* argv[]) {
   int hasArgC = 0;
+  int minDiv = 600;
+  int maxDiv = 1800;
 #define HAS_ARG(s1, s2) (!strcmp(s1, argv[i]) || !strcmp(s2, argv[i]))
 #define NORM_RANGE(a,x,y,d) (((a)>=(x)&&(a)<=(y))?(a):(d))
   for (int i = 1; i < argc; ++i) {
@@ -346,6 +347,7 @@ void parse_cmdargs(int argc, char* argv[]) {
           "-d | --dead-zone [INT]             | thumbsticks deadzone (0~32767).\n"
           "-t | --trigger-threshold [INT]     | LR trigger threshold (0~255).\n"
           "-a | --swap-abxy [BOOL]            | swap A<->B, X<->Y.\n"
+          "-m | --mouse-damp [INT]:[INT]      | min:max damp factors to control mouse speed.\n"
           );
       exit(0);
     }
@@ -356,9 +358,9 @@ void parse_cmdargs(int argc, char* argv[]) {
     if (HAS_ARG("-e", "--tune-time") && i < argc) {
       int a, b, c;
       sscanf(argv[i+1], "%d:%d:%d", &a, &b, &c);
-      frameTime = NORM_RANGE(a,25,255,100);
-      keyWaitFrames = NORM_RANGE(b,1,255,10);
-      keyHoldFrames = NORM_RANGE(c,1,255,10);
+      frameTime     = NORM_RANGE(a,25,255,100);
+      keyWaitFrames = NORM_RANGE(b, 1,255, 10);
+      keyHoldFrames = NORM_RANGE(c, 1,255, 10);
     }
     if (HAS_ARG("-d", "--dead-zone") && i < argc) {
       gConfigDeadZone = atoi(argv[i+1]);
@@ -369,11 +371,17 @@ void parse_cmdargs(int argc, char* argv[]) {
     if (HAS_ARG("-a", "--swap-abxy")) {
       gConfigSwapABXY = 1;
     }
+    if (HAS_ARG("-m", "--mouse-damp") && i < argc) {
+      int a, b;
+      sscanf(argv[i+1], "%d:%d", &a, &b);
+      minDiv = NORM_RANGE(a, 1, 32767, 600);
+      maxDiv = NORM_RANGE(b, 1, 32767, 1800);
+    }
   }
   if (!hasArgC) {
     load_config_file("START");
   }
-  calcDiv();
+  calcDiv(minDiv, maxDiv);
 }
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType) {
