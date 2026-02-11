@@ -163,12 +163,13 @@ void key_translate_ex(WORD vk, WORD mod) {
 
     case 0x0300: window_hide_show(); break; /* window_hide_show */
     case 0x0301: window_topmost(); break; /* window_topmost */
-    case 0x0302: window_resize(16.0/9.0, mod); break; /* window16:9_width */
-    case 0x0303: window_resize(4.0/3.0, mod); break; /* window4:3_width */
+    case 0x0302: window_resize_client_area(mod, ASPECT_RATIO_W2H(16.0,9.0,mod)); break; /* window16:9_width */
+    case 0x0303: window_resize_client_area(mod, ASPECT_RATIO_W2H(4.0,3.0,mod)); break; /* window4:3_width */
     case 0x0304: window_move(mod, 0); break; /* window_move_x */
     case 0x0305: window_move(0, mod); break; /* window_move_y */
     case 0x0306: screen_off(); break; /* screen_off */
     case 0x0307: runlnk_async("open", mod); break; /* runlnk */
     case 0x0308: runlnk_async("runas", mod); break; /* runlnk_admin */
+    case 0x0309: window_move_center(); break; /* window_move_center */
   }
 }

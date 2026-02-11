@@ -52,15 +52,15 @@ void window_set_pos(HWND wndPos) {
       fgwnd->x, fgwnd->y, fgwnd->w, fgwnd->h, SWP_SHOWWINDOW);
 }
 
-void window_resize(double aspectRatio, int cx) {
-  // Get screen width and height
-  int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-  int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-  int cy = (cx * 1.0) / aspectRatio;
-  int x = (screenWidth - cx) / 2;
-  int y = (screenHeight - cy) / 2;
-  MoveWindow(GetForegroundWindow(), x, y, cx, cy, 0);
-
+void window_resize_client_area(int w, int h) {
+  FgWnd* fgwnd = fgwnd_query();
+  RECT cr;
+  GetClientRect(fgwnd->hwnd, &cr);
+  int brimW = fgwnd->w - (cr.right - cr.left);
+  int brimH = fgwnd->h - (cr.bottom - cr.top);
+  w += brimW;
+  h += brimH;
+  MoveWindow(fgwnd->hwnd, fgwnd->x, fgwnd->y, w, h, 0);
 }
 
 void window_topmost() {
@@ -77,6 +77,15 @@ void window_move(int x, int y) {
   FgWnd* fgwnd = fgwnd_query();
   MoveWindow(fgwnd->hwnd,
       (fgwnd->x)+x, (fgwnd->y)+y, fgwnd->w, fgwnd->h, 1);
+}
+
+void window_move_center() {
+  FgWnd* fgwnd = fgwnd_query();
+  int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+  int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+  int x = (screenWidth - fgwnd->w) / 2;
+  int y = (screenHeight - fgwnd->h) / 2;
+  window_move(x, y);
 }
 
 void screen_off() {

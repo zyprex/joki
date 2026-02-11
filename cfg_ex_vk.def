@@ -23,6 +23,7 @@
 {"screen_off",       0x0306},
 {"runlnk",           0x0307}, /* param: number n */
 {"runlnk_admin",     0x0308}, /* param: number n */
+{"window_move_center",0x0309},
 
 /* mouse buttons */
 {"mouse_left", VK_LBUTTON},
