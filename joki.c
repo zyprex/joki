@@ -20,9 +20,9 @@ DWORD xusers[XUSER_MAX_COUNT];
 
 int gVarIdleFrame;
 
-int frameTime = 100; /* per frame time in ms */
-int keyWaitFrames = 10; /* time to wait the multiple presses */
-int keyHoldFrames = 10; /* time to trigger long press */
+int frameTime     = DEFAULT_FRAME_TIME; /* per frame time in ms */
+int keyWaitFrames = DEFAULT_KEYWAIT_FRAMES; /* time to wait the multiple presses */
+int keyHoldFrames = DEFAULT_KEYHOLD_FRAMES; /* time to trigger long press */
 
 int gConfigDeadZone = 4000;
 int gConfigTriggerThreshold = 60;
@@ -357,10 +357,8 @@ void cleanup() {
 
 void parse_cmdargs(int argc, char* argv[]) {
   int hasArgC = 0;
-  int minDiv = 600;
-  int maxDiv = 1800;
-#define HAS_ARG(s1, s2) (!strcmp(s1, argv[i]) || !strcmp(s2, argv[i]))
-#define NORM_RANGE(a,x,y,d) (((a)>=(x)&&(a)<=(y))?(a):(d))
+  int minDiv = DEFAULT_MINDIV;
+  int maxDiv = DEFAULT_MAXDIV;
   for (int i = 1; i < argc; ++i) {
     if (HAS_ARG("-h", "--help")) {
       printf(
@@ -382,9 +380,9 @@ void parse_cmdargs(int argc, char* argv[]) {
     if (HAS_ARG("-e", "--tune-time") && i < argc) {
       int a, b, c;
       sscanf(argv[i+1], "%d:%d:%d", &a, &b, &c);
-      frameTime     = NORM_RANGE(a,25,255,100);
-      keyWaitFrames = NORM_RANGE(b, 1,255, 10);
-      keyHoldFrames = NORM_RANGE(c, 1,255, 10);
+      frameTime     = NORM_RANGE(a,25,255, DEFAULT_FRAME_TIME);
+      keyWaitFrames = NORM_RANGE(b, 1,255, DEFAULT_KEYWAIT_FRAMES);
+      keyHoldFrames = NORM_RANGE(c, 1,255, DEFAULT_KEYHOLD_FRAMES);
     }
     if (HAS_ARG("-d", "--dead-zone") && i < argc) {
       gConfigDeadZone = atoi(argv[i+1]);
@@ -398,8 +396,8 @@ void parse_cmdargs(int argc, char* argv[]) {
     if (HAS_ARG("-m", "--mouse-damp") && i < argc) {
       int a, b;
       sscanf(argv[i+1], "%d:%d", &a, &b);
-      minDiv = NORM_RANGE(a, 1, 32767, 600);
-      maxDiv = NORM_RANGE(b, 1, 32767, 1800);
+      minDiv = NORM_RANGE(a, 1, 32767, DEFAULT_MINDIV);
+      maxDiv = NORM_RANGE(b, 1, 32767, DEFAULT_MAXDIV);
     }
   }
   if (!hasArgC) {
@@ -425,11 +423,6 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType) {
 
 int main(int argc, char *argv[]) {
   /* The `atexit` can't execute ShowWindow() */
-  /* if (atexit(cleanup)) { */
-    /* printf("program aborted.\n"); */
-    /* exit(1); */
-  /* } */
-
   if (SetConsoleCtrlHandler(CtrlHandler, 1) == 0) {
     printf("Error: Could not set control handler\n");
     return 1;

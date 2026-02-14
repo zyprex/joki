@@ -7,6 +7,21 @@
 #include "cfg.h"
 #include "inputs.h"
 
+#ifdef DEBUG
+#define DEFAULT_FRAME_TIME     100
+#define DEFAULT_KEYWAIT_FRAMES 10
+#define DEFAULT_KEYHOLD_FRAMES 10
+#else
+#define DEFAULT_FRAME_TIME     25
+#define DEFAULT_KEYWAIT_FRAMES 12
+#define DEFAULT_KEYHOLD_FRAMES 20
+#endif
+
+#define DEFAULT_DEAD_ZONE         4000
+#define DEFAULT_TRIGGER_THRESHOLD 60
+#define DEFAULT_MINDIV 600
+#define DEFAULT_MAXDIV 1800
+
 #define ABS(a) ((a)>=0?(a):(-(a)))
 #define IN_DEAD_ZONE(x, y, z) ((x)*(x)+(y)*(y) < z*z)
 
@@ -83,6 +98,10 @@ void xusers_loop();
 
 void load_config_file(char* fname);
 void cleanup();
+
+#define HAS_ARG(s1, s2) (!strcmp(s1, argv[i]) || !strcmp(s2, argv[i]))
+#define NORM_RANGE(a,x,y,d) (((a)>=(x)&&(a)<=(y))?(a):(d))
+
 void parse_cmdargs(int argc, char* argv[]);
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 

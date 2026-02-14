@@ -10,18 +10,19 @@ Joki is a console program used to map gamepad keys to keyboard or mouse inputs.
 - Windows 8 (XInput1.4)
 
 # Table of Contents
-1. [Quick Start](#quick-start)
-2. [Docs](#docs)
+- [Quick Start](#quick-start)
+- [Docs](#docs)
   - [Multiple Tap and Long Press](#multiple-tap-and-long-press)
   - [Command Arguments](#command-arguments)
   - [Configure File Specification](#configure-file-specification)
-3. [Usage](#usage)
+- [Usage](#usage)
   - [Bind Key](#bind-key)
   - [Switch Profiles](#switch-profiles)
   - [Morse Code Input](#morse-code-input)
   - [Tilt Mode](#tilt-mode)
-4. [Know Issues](#know-issues)
-5. [Reason](#reason)
+  - [Trigger Keystrokes](#trigger-keystrokes)
+- [Know Issues](#know-issues)
+- [Reason](#reason)
 
 # Quick Start
 
@@ -221,7 +222,7 @@ TITL_MODE <option> right
 
 ## Trigger Keystrokes
 
-If want trigger a sequence of keypress. use `<tap_thru>`.
+If want trigger a sequence of keypresses. use `<tap_thru>`.
 
 Example:
 
