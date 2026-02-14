@@ -11,11 +11,12 @@ Joki is a console program used to map gamepad keys to keyboard or mouse inputs.
 
 # Table of Contents
 1. [Quick Start](#quick-start)
-2. [Technical Details](#technical-details)
+2. [Docs](#docs)
   - [Multiple Tap and Long Press](#multiple-tap-and-long-press)
-3. [Features Explanation](#features-explanation)
   - [Command Arguments](#command-arguments)
   - [Configure File Specification](#configure-file-specification)
+3. [Usage](#usage)
+  - [Bind Key](#bind-key)
   - [Switch Profiles](#switch-profiles)
   - [Morse Code Input](#morse-code-input)
   - [Tilt Mode](#tilt-mode)
@@ -42,9 +43,12 @@ LS_MOUSE_MOVE <option> on
    console window, try move the left thumbsticks,
    tap the left or right trigger.
 
-# Technical Details
+# Docs
 
 ## Multiple Tap and Long Press
+
+<details>
+<summary>Multiple Tap and Long Press</summary>
 
 If tune time setting is default value, then:
 - Multiple tap occured in 1s.
@@ -69,22 +73,26 @@ down-----------up
 
 ```
 
-# Features Explanation
+</details>
 
 ## Command Arguments
 
 Type `joki.exe -h` see Command args help.
 
-Example:
+<details>
+<summary>Example:</summary>
 
 Load `configs/mycfg.ini` as initial file.
 And swap 'ABXY' buttons.
 Set frame delay to 25ms, trigger multiple tap in 1s(25x40),
 trigger long press after 2s(25x80).
 
-```
+```sh
 joki --tune-time 25:40:80 --config mycfg --swap-abxy
 ```
+
+</details>
+
 
 ## Configure File Specification
 
@@ -112,39 +120,17 @@ Explain one line config:
   - `<single_tap>` or `1`: trigger only at single tap.
   - `<double_tap>` or `2`: trigger only at double tap.
   - `<long_press>` or `-1`: trigger only at long hold the key.
-  - `<repeat>`: repeat after long press a key.
+  - `<repeat>`: repeat after long press a key, repeat long press.
   - `<toggle>`: switch key's down up state.
+  - `<tap_thru>`: multiple tap fall through.
   - number N > 2 : trigger only when you multiple tap N times.
 
 **WARN: some type are definitly confilct with other!**
 
-A pseudo-example with some comments to demostrate all type's usage:
-```
-# Press 'A' key to emulate mouse click.
-A <down_up> mouse_left
-# Above line's equal form.
-A 0 mouse_left
-# ctrl+shift+alt+win+c
-A 0 c CSAW
-# Press 'A' key to simultaneously press down or up the
-# left arrow key and right arrow key.
-A 0 left right
-# Long press 'A'
-A <long_press> down
-# Long press enable repeat
-A <repeat> on
-# Long press disable repeat (implicated)
-A <repeat> off
-# Toggle A key's down or up
-A <toggle> on
-# Press A 5 times to trigger up arrow key.
-A 5 up
-# Press A to move mouse down side 10 px.
-A 0 mouse_move_y 10
-```
 
 3. `VIRTUAL_CODE`
   - one lowercase word. (ref in `cfg_ex_vk.def` file)
+  - '#Num': #2, #1, etc.
 
 4. `MOD_CODE`
   - 'A': alt key
@@ -154,16 +140,39 @@ A 0 mouse_move_y 10
   - lowercase word: treat as `VIRTUAL_CODE`.
   - number: the parameter for `VIRTUAL_CODE`.
 
+# Usage
+
+## Bind Key
+
+A pseudo-example with some comments to demostrate almost all type usage:
+```ini
+# Press 'A' key to emulate mouse click.
+A <down_up> mouse_left
+# Above line's equal form.
+A 0 mouse_left
+# ctrl+shift+alt+win+c
+A 0 c CSAW
+# Press two key down or up (right to left)
+A 0 c ctrl
+# Long press 'A'
+A <long_press> down
+# Long press enable repeat (implicate disabled)
+A <repeat> on
+# Toggle A key's down or up  (implicate disabled)
+A <toggle> on
+# Press A 5 times to trigger up arrow key.
+A 5 up
+# Press A to move mouse down side 10 px.
+A 0 mouse_move_y 10
+```
+
 ## Switch Profiles
 
 Switch different config file by `cfg_mode` function.
 
-Example:
-in `START.ini`, `A.ini`, `B.ini`:
-```
-START 0 cfg_mode
-```
-Then you just press 'START' to enter the cfg mode. On this mode,
+Assume in `START.ini`, `A.ini`, `B.ini`, has line `START 0 cfg_mode`.
+
+Then press 'START' to enter the cfg mode. On this mode,
 Press 'A' to load `A.ini`, Press 'B' to load `B.ini`.
 When you want load `B.ini`, press 'START' then 'A' switch to `A.ini`.
 Load `START.ini` press 'START' then the 'START' again.
@@ -172,7 +181,7 @@ Load `START.ini` press 'START' then the 'START' again.
 There have some internal functions let you input alphabeta use morse code.
 
 Example:
-```
+```ini
 A 0 morse_send 0
 B 0 morse_send 1
 X 0 morse_clear
@@ -189,7 +198,7 @@ A website for morse code: https://www.omniglot.com/writing/morsecode.htm
 Use `runlnk` command to run `.lnk` file in directory `lnks`.
 
 Example:
-```
+```ini
 # open the "lnks/1.lnk"
 A 0 runlnk 1
 # open the "lnks/1.lnk" as adminstrator
@@ -200,7 +209,7 @@ A 0 runlnk_admin 1
 
 If want a single hand mode, use option `TITL_MODE`.
 
-```
+```ini
 # Use the controller by single left hand.
 # The DPAD and two sticks rotate 90 degree.
 TITL_MODE <option> left
@@ -210,14 +219,31 @@ TITL_MODE <option> right
 # And any other value for TITL_MODE is useless.
 ```
 
+## Trigger Keystrokes
+
+If want trigger a sequence of keypress. use `<tap_thru>`.
+
+Example:
+
+```ini
+BACK 1 a
+BACK 2 b
+BACK 3 c
+# press BACK 3 tap, output: cba
+BACK <tap_thru> #3 -2
+# press BACK 1 tap, output: abc
+BACK <tap_thru> #1 2
+```
+
 # Know Issues
 
 1. The program didn't hijack original gamepad key event.
 2. Some windows settings, such as ClickLock, will cause
    unexpected results.
-3. Use mouse select text in console let the program halted.
-4. Some app (e.g. Task Manager) require adminstrator privilege
-   to emulate key strokes, so run it as adminstrator. (The run 
+3. Use mouse select text in console let the program halted
+   (if missing Adminstrator privilege).
+4. Some app (e.g. Task Manager) require Adminstrator privilege
+   to emulate key strokes, so run it as Adminstrator. (The run 
    entrance is in right click context menu)
 5. Always disgusted honeycomb-like setup GUI, so no GUI setup
    in the future.

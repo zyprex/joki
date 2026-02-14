@@ -94,37 +94,41 @@ short s2type(char* s) {
   if (!strcmp("<repeat>", s))     return KT_REPEAT;
   if (!strcmp("<toggle>", s))     return KT_TOGGLE;
   if (!strcmp("<option>", s))     return KT_OPTION;
+  if (!strcmp("<tap_thru>", s))   return KT_TAP_THRU;
   return atoi(s);
 }
 
 short s2vk(char* s) {
- for (int i = 0; i < vcodesLen; ++i) {
-  if (!strcmp(s, vcodes[i].name)) {
-    return vcodes[i].code;
+  if (s[0] == '#' && s[1] != '\0') {
+    return (atoi(s+1)+0x00FF);
   }
- }
- return 0;
+  for (int i = 0; i < vcodesLen; ++i) {
+    if (!strcmp(s, vcodes[i].name)) {
+      return vcodes[i].code;
+    }
+  }
+  return 0;
 }
 
 short s2mod(char* s, short vk) {
- short ret = 0;
- if (vk >= 0x00FF) {
-   return atoi(s);
- }
- else {
-   if (strchr(s, 'A')) ret |= MOD_A;
-   if (strchr(s, 'C')) ret |= MOD_C;
-   if (strchr(s, 'S')) ret |= MOD_S;
-   if (strchr(s, 'W')) ret |= MOD_W;
-   if (ret != 0) {
-     return ret;
-   }
-   ret = s2vk(s);
-   if (ret != 0) {
-     ret += 0x8000;
-   }
- }
- return ret;
+  short ret = 0;
+  if (vk >= 0x00FF) {
+    return atoi(s);
+  }
+  else {
+    if (strchr(s, 'A')) ret |= MOD_A;
+    if (strchr(s, 'C')) ret |= MOD_C;
+    if (strchr(s, 'S')) ret |= MOD_S;
+    if (strchr(s, 'W')) ret |= MOD_W;
+    if (ret != 0) {
+      return ret;
+    }
+    ret = s2vk(s);
+    if (ret != 0) {
+      ret += 0x8000;
+    }
+  }
+  return ret;
 }
 
 void cfg_parse(char* line, int lnum) {
@@ -161,11 +165,11 @@ int cfg_load(char* fname) {
   }
   fseek(fp,0,SEEK_SET);
   if (configs) {
-   configs = realloc(configs, lcnt*sizeof(Cfg));
-   memset(configs, 0, lcnt*sizeof(Cfg));
+    configs = realloc(configs, lcnt*sizeof(Cfg));
+    memset(configs, 0, lcnt*sizeof(Cfg));
   }
   else {
-   configs = calloc(lcnt, sizeof(Cfg));
+    configs = calloc(lcnt, sizeof(Cfg));
   }
   configsLen = lcnt;
   while (fgets(line, sizeof(line), fp)) {

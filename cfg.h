@@ -70,6 +70,7 @@ typedef enum KLabel_e {
 #define KT_REPEAT -2
 #define KT_TOGGLE -3
 #define KT_OPTION -4
+#define KT_TAP_THRU -5
 
 /* Item structure for map name to virtual code */
 typedef struct VCode_t {

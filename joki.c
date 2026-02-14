@@ -98,6 +98,29 @@ void simulate_keypress(KLabel lb, short type) {
   key_translate_all(cfg_get_vk(idx), cfg_get_mod(idx));
 }
 
+void simulate_keystrokes(KLabel lb, short n) {
+  int idx = cfg_search(lb, KT_TAP_THRU);
+  short vk = cfg_get_vk(idx) - 0x00FF;
+  short mod = cfg_get_mod(idx);
+  if (vk < 0 || !mod || vk != n) {
+    return;
+  }
+  if (mod > 0) {
+    n++;
+    int end = n + mod;
+    while (n < end) {
+      simulate_keypress(lb, n++);
+    }
+  }
+  else {
+    n--;
+    int start = n + mod;
+    while (n > start) {
+      simulate_keypress(lb, n--);
+    }
+  }
+}
+
 void simulate_downup_or_load_cfg(KLabel lb) {
   if (!load_config_file_mode(lb)) {
     simulate_keydown(lb, KT_DOWN_UP);
@@ -118,6 +141,7 @@ void key_complex_register(KLabel lb, int isDown, int idleFrame, CKState* stat) {
     if (stat->repeat > 0) {
       LOG("%s--press%2d\n", labelName[lb], stat->repeat);
       simulate_keypress(lb, stat->repeat);
+      simulate_keystrokes(lb, stat->repeat);
       stat->repeat = 0;
       stat->hold = 0;
     }

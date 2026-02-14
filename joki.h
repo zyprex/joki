@@ -71,6 +71,7 @@ int load_config_file_mode(KLabel lb);
 void simulate_keydown(KLabel lb, short type);
 void simulate_keyup(KLabel lb, short type);
 void simulate_keypress(KLabel lb, short type);
+void simulate_keystrokes(KLabel lb, short n);
 void simulate_downup_or_load_cfg(KLabel lb);
 void key_complex_register(KLabel lb, int isDown, int idleFrame, CKState* stat);
 void thumbstick_move_register(const char lr, int idx, int isMove);
